@@ -2,13 +2,14 @@ import { App } from "@slack/bolt";
 import dotenv from "dotenv";
 import { extractFirstUrl } from "./slack.js";
 import { fetchArticleContent } from "./article.js";
+import { analyzeArticle } from "./ai.js";
 
 dotenv.config();
 
 const app = new App({
-  token: process.env.SLACK_BOT_TOKEN ?? "",
-  appToken: process.env.SLACK_APP_TOKEN ?? "",
-  socketMode: true,
+  token: process.env.SLACK_BOT_TOKEN || '',
+  appToken: process.env.SLACK_APP_TOKEN || '',
+  socketMode: true || '',
 });
 
 app.event("app_mention", async ({ event, say }) => {
@@ -25,20 +26,23 @@ app.event("app_mention", async ({ event, say }) => {
   }
 
   await say({
-    text: "記事を取得しています...",
+    text: "記事を取得してAIで分析しています...",
     thread_ts: event.ts,
   });
 
   try {
     const article = await fetchArticleContent(url);
+    const analysis = await analyzeArticle(article);
 
     await say({
-      text: `記事を取得しました。\nタイトル: ${article.title}\n本文文字数: ${article.text.length}`,
+      text: analysis,
       thread_ts: event.ts,
     });
   } catch (error) {
+    console.error(error);
+
     await say({
-      text: `記事本文の取得に失敗しました。\nURL: ${url}`,
+      text: `記事分析に失敗しました。\nURL: ${url}\n原因: 記事本文の取得失敗、またはAI分析エラーの可能性があります。`,
       thread_ts: event.ts,
     });
   }
