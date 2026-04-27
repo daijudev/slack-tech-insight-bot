@@ -101,6 +101,6 @@ webhookApp.post("/webhook/instapaper", async (c) => {
   console.log("⚡️ tech-insight-bot is running");
 
   const port = Number(process.env.PORT ?? process.env.WEBHOOK_PORT ?? "3000");
-  serve({ fetch: webhookApp.fetch, port });
+  serve({ fetch: webhookApp.fetch, port, hostname: "0.0.0.0" });
   console.log(`🔗 Webhook server listening on port ${port}`);
 })();
