@@ -100,7 +100,7 @@ webhookApp.post("/webhook/instapaper", async (c) => {
   await slackApp.start();
   console.log("⚡️ tech-insight-bot is running");
 
-  const port = Number(process.env.WEBHOOK_PORT ?? "3000");
+  const port = Number(process.env.PORT ?? process.env.WEBHOOK_PORT ?? "3000");
   serve({ fetch: webhookApp.fetch, port });
   console.log(`🔗 Webhook server listening on port ${port}`);
 })();
